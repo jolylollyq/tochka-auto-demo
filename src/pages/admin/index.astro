@@ -27,14 +27,14 @@ const nav = [
         <a class="brand" href="#overview" aria-label="ТОЧКА — админ-панель">
           <span class="brand-mark">т.</span><span class="brand-name">ТОЧКА<small>АВТОСЕРВИС</small></span>
         </a>
-        <div class="workspace"><span class="workspace-avatar">Т</span><span><b>Демо автосервис</b><small>рабочее пространство</small></span><span class="chevron">⌄</span></div>
+        <div class="workspace"><span class="workspace-avatar">Т</span><span><b>Автосервис</b><small>рабочее пространство</small></span><span class="chevron">⌄</span></div>
         <p class="nav-caption">УПРАВЛЕНИЕ</p>
         <nav class="side-nav" aria-label="Разделы панели">
           {nav.map((item, index) => <button class:list={['nav-link', { active: index === 0 }]} type="button" data-target={item.id} aria-current={index === 0 ? 'page' : undefined}><span class="nav-icon">{item.icon}</span><span>{item.label}</span>{item.count && <span class="nav-count" data-count-for={item.id}>{item.count}</span>}</button>)}
         </nav>
         <div class="sidebar-bottom">
-          <div class="demo-mark"><i></i> ДЕМО-РЕЖИМ</div>
-          <p>Можно менять и добавлять элементы. После перезагрузки всё вернётся к исходному виду.</p>
+          <div class="demo-mark"><i></i> ЛОКАЛЬНЫЙ ПРОСМОТР</div>
+          <p>Правки видны только в этой вкладке и сбрасываются при обновлении.</p>
           <a class="public-link" href={baseUrl} target="_blank" rel="noopener">Открыть сайт <span>↗</span></a>
         </div>
       </aside>
@@ -42,13 +42,13 @@ const nav = [
       <main class="main-area">
         <header class="topbar">
           <div class="breadcrumbs"><span>ТОЧКА</span><i>/</i><b id="crumb-label">Главная</b></div>
-          <div class="top-actions"><span class="demo-pill"><i></i> Черновик · демо</span><a class="preview-link" href={baseUrl} target="_blank" rel="noopener">Предпросмотр сайта <b>↗</b></a><button class="apply-button" id="apply-all" type="button">Применить изменения <span>✓</span></button></div>
+          <div class="top-actions"><a class="preview-link" href={baseUrl} target="_blank" rel="noopener">Предпросмотр сайта <b>↗</b></a><button class="apply-button" id="apply-all" type="button">Применить изменения <span>✓</span></button></div>
         </header>
 
         <div class="content-wrap">
           <section class="page-panel active-panel" id="panel-overview" data-panel="overview">
             <div class="page-heading"><div><p class="eyebrow"><i></i> АДМИНИСТРАТИВНАЯ ПАНЕЛЬ</p><h1>Добро пожаловать!</h1><p class="subheading">Управляйте содержимым сайта автосервиса в одном месте.</p></div><button class="button-secondary" type="button" data-go="content">✎ <span>Настроить главную</span></button></div>
-            <div class="notice"><span class="notice-icon">✳</span><div><b>Интерактивное демо</b><span>Поля можно редактировать, услуги и работы — добавлять и удалять. Это только макет: публикации и сохранения нет.</span></div><button class="notice-close" type="button" aria-label="Скрыть подсказку">×</button></div>
+            <div class="notice"><span class="notice-icon">✳</span><div><b>Попробуйте изменить сайт</b><span>Поля можно редактировать, а услуги и примеры работ — добавлять и удалять.</span></div><button class="notice-close" type="button" aria-label="Скрыть подсказку">×</button></div>
             <div class="metric-grid">
               <button class="metric-card" data-go="services" type="button"><span class="metric-symbol olive">⚙</span><span class="metric-copy"><b id="metric-services">{data.services.length}</b><small>Услуг на сайте</small></span><span class="metric-arrow">↗</span></button>
               <button class="metric-card" data-go="works" type="button"><span class="metric-symbol orange">▧</span><span class="metric-copy"><b id="metric-works">{data.cases.length}</b><small>Примеров работ</small></span><span class="metric-arrow">↗</span></button>
@@ -63,10 +63,10 @@ const nav = [
               </article>
               <article class="card preview-card"><div class="card-heading"><div><p class="eyebrow">КАК ЭТО ВЫГЛЯДИТ</p><h2>Мини-превью сайта</h2></div><a class="subtle-link" href={baseUrl} target="_blank" rel="noopener">Открыть ↗</a></div>
                 <div class="mini-site"><div class="mini-top"><b>т.</b><span>АВТОСЕРВИС</span><i>☰</i></div><div class="mini-photo" style={`background-image:url('${imageUrl(data.heroImage)}')`}><div class="mini-photo-shade"></div><div class="mini-caption"><small>НЕЗАВИСИМЫЙ АВТОСЕРВИС</small><b data-preview="headline">{data.headline}</b><span data-preview="address">{data.address}</span><button type="button" data-go="contacts">Записаться →</button></div></div></div>
-                <p class="preview-hint"><i></i> Это демонстрация интерфейса панели. Сайт по ссылке не изменяется.</p>
+                <p class="preview-hint"><i></i> Внесите правки в панели и посмотрите их здесь.</p>
               </article>
             </div>
-            <div class="bottom-row"><div><span class="bottom-icon">◷</span><span><b>Работаете в демо-режиме</b><small>Любые действия видны только в этой вкладке.</small></span></div><button type="button" class="text-button" id="reset-all">Сбросить макет <span>↺</span></button></div>
+            <div class="bottom-row"><span></span><button type="button" class="text-button" id="reset-all">Сбросить макет <span>↺</span></button></div>
           </section>
 
           <section class="page-panel" id="panel-content" data-panel="content" hidden>
@@ -85,7 +85,7 @@ const nav = [
             <div class="page-heading"><div><p class="eyebrow"><i></i> СОДЕРЖАНИЕ САЙТА</p><h1>Услуги</h1><p class="subheading">Редактируйте карточки или добавляйте новые.</p></div><button class="apply-button" data-apply type="button">Применить изменения <span>✓</span></button></div>
             <div class="toolbar"><div><b id="services-count">{data.services.length} услуг</b><span>· макет отображения раздела на сайте</span></div><button class="add-button" id="add-service" type="button"><b>＋</b> Добавить услугу</button></div>
             <div class="editable-list" id="services-list"></div>
-            <div class="editor-note"><span>i</span> Нажмите на поле, чтобы изменить его. Кнопка «Применить» покажет результат только в демо-панели.</div>
+            <div class="editor-note"><span>i</span> Нажмите на поле, чтобы изменить его.</div>
           </section>
 
           <section class="page-panel" id="panel-works" data-panel="works" hidden>
@@ -96,9 +96,9 @@ const nav = [
           </section>
 
           <section class="page-panel" id="panel-contacts" data-panel="contacts" hidden>
-            <div class="page-heading"><div><p class="eyebrow"><i></i> ДАННЫЕ АВТОСЕРВИСА</p><h1>Контакты</h1><p class="subheading">Обновите контактные данные в демонстрационном макете.</p></div><button class="apply-button" data-apply type="button">Применить изменения <span>✓</span></button></div>
+            <div class="page-heading"><div><p class="eyebrow"><i></i> ДАННЫЕ АВТОСЕРВИСА</p><h1>Контакты</h1><p class="subheading">Обновите контактные данные и посмотрите результат.</p></div><button class="apply-button" data-apply type="button">Применить изменения <span>✓</span></button></div>
             <div class="contacts-layout"><article class="card editor-card"><div class="card-heading"><div><p class="eyebrow">КАК С ВАМИ СВЯЗАТЬСЯ</p><h2>Контактная информация</h2></div><span class="editing-label">✎ Редактирование</span></div>
-              <label class="field"><span>Номер телефона</span><input data-field="phone" value={data.phone} /><small>В демо номер не совершает звонок.</small></label>
+              <label class="field"><span>Номер телефона</span><input data-field="phone" value={data.phone} /></label>
               <label class="field"><span>Адрес автосервиса</span><input data-field="address" value={data.address} /></label>
               <label class="field"><span>График работы</span><input data-field="hours" value={data.hours} /></label>
               <label class="field"><span>Ссылка на ВКонтакте</span><input data-field="vk" placeholder="https://vk.com/..." /></label>
@@ -107,11 +107,11 @@ const nav = [
             </article><article class="card contact-preview"><div class="card-heading"><div><p class="eyebrow">ПРЕДПРОСМОТР</p><h2>Контакты в подвале сайта</h2></div><span class="live-badge"><i></i> Обновляется</span></div><div class="contact-preview-body"><div class="contact-brand"><b>т.</b><span data-preview="name">{data.name}</span></div><div class="contact-preview-row"><span>ПОЗВОНИТЬ</span><b data-preview="phone">{data.phone}</b></div><div class="contact-preview-row"><span>МЫ НАХОДИМСЯ</span><b data-preview="address">{data.address}</b></div><div class="contact-preview-row"><span>РАБОТАЕМ</span><b data-preview="hours">{data.hours}</b></div><div class="social-preview"><button type="button" disabled>ВКонтакте ↗</button><button type="button" disabled>Telegram ↗</button></div></div></article></div>
           </section>
 
-          <footer class="page-footer"><span>ТОЧКА · интерактивный макет админ-панели</span><span>Действия не сохраняются и не меняют опубликованный сайт</span></footer>
+          <footer class="page-footer"><span>ТОЧКА · панель управления</span></footer>
         </div>
       </main>
     </div>
-    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><div><b>Готово!</b><small>Изменения применены в демо-макете</small></div><button type="button" aria-label="Закрыть уведомление">×</button></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><div><b>Готово!</b><small>Изменения применены в панели</small></div><button type="button" aria-label="Закрыть уведомление">×</button></div>
     <script type="application/json" id="admin-seed" set:html={JSON.stringify(data)}></script>
     <script>
       const seed = JSON.parse(document.querySelector('#admin-seed').textContent);
@@ -122,7 +122,7 @@ const nav = [
       const toast = document.querySelector('#toast');
       let toastTimer;
 
-      function showToast(title = 'Готово!', message = 'Изменения применены в демо-макете') {
+      function showToast(title = 'Готово!', message = 'Изменения применены в панели') {
         toast.querySelector('b').textContent = title;
         toast.querySelector('small').textContent = message;
         toast.classList.add('show');
@@ -158,7 +158,7 @@ const nav = [
         document.querySelector('#metric-services').textContent = state.services.length;
         document.querySelector('[data-count-for="services"]').textContent = state.services.length;
         list.querySelectorAll('[data-service]').forEach((field) => field.addEventListener('input', () => { state.services[Number(field.closest('[data-index]').dataset.index)][field.dataset.service] = field.value; }));
-        list.querySelectorAll('[data-delete-service]').forEach((button) => button.addEventListener('click', () => { state.services.splice(Number(button.dataset.deleteService), 1); renderServices(); showToast('Карточка удалена', 'Удаление пока видно только в демо'); }));
+        list.querySelectorAll('[data-delete-service]').forEach((button) => button.addEventListener('click', () => { state.services.splice(Number(button.dataset.deleteService), 1); renderServices(); showToast('Карточка удалена', 'Удаление видно только в этой вкладке'); }));
       }
       function renderWorks() {
         const list = document.querySelector('#works-list');
@@ -168,24 +168,24 @@ const nav = [
             <div class="two-fields"><label class="field"><span>Автомобиль</span><input data-work="car" value="${esc(item.car)}" placeholder="Седан · 2020"></label><label class="field"><span>Стоимость</span><input data-work="price" value="${esc(item.price)}" placeholder="от 5 000 ₽"></label></div>
             <label class="field"><span>Описание результата</span><textarea data-work="result" rows="2" placeholder="Что было сделано">${esc(item.result || item.solution || '')}</textarea></label>
           </div><button type="button" class="delete-button" data-delete-work="${index}" aria-label="Удалить работу">×</button>
-        </article>`).join('') || '<div class="empty-state"><b>Портфолио пока пустое</b><span>Добавьте демонстрационный пример работы.</span></div>';
+        </article>`).join('') || '<div class="empty-state"><b>Портфолио пока пустое</b><span>Добавьте пример работы.</span></div>';
         document.querySelector('#works-count').textContent = `${state.cases.length} ${plural(state.cases.length, 'карточка', 'карточки', 'карточек')}`;
         document.querySelector('#metric-works').textContent = state.cases.length;
         document.querySelector('[data-count-for="works"]').textContent = state.cases.length;
         list.querySelectorAll('[data-work]').forEach((field) => field.addEventListener('input', () => { state.cases[Number(field.closest('[data-work-index]').dataset.workIndex)][field.dataset.work] = field.value; }));
-        list.querySelectorAll('[data-delete-work]').forEach((button) => button.addEventListener('click', () => { state.cases.splice(Number(button.dataset.deleteWork), 1); renderWorks(); showToast('Карточка удалена', 'Удаление пока видно только в демо'); }));
+        list.querySelectorAll('[data-delete-work]').forEach((button) => button.addEventListener('click', () => { state.cases.splice(Number(button.dataset.deleteWork), 1); renderWorks(); showToast('Карточка удалена', 'Удаление видно только в этой вкладке'); }));
       }
       function plural(number, one, few, many) { const mod10 = number % 10; const mod100 = number % 100; return mod10 === 1 && mod100 !== 11 ? one : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? few : many; }
       document.querySelector('#add-service').addEventListener('click', () => { state.services.push({ title: '', description: '', price: '', time: '' }); renderServices(); document.querySelector('#services-list .editable-card:last-child input').focus(); });
       document.querySelector('#add-work').addEventListener('click', () => { state.cases.push({ title: '', category: 'Новая работа', car: '', price: '', result: '', image: seed.heroImage }); renderWorks(); document.querySelector('#works-list .editable-card:last-child input').focus(); });
-      document.querySelectorAll('[data-apply], #apply-all').forEach((button) => button.addEventListener('click', () => showToast('Изменения применены', 'Только в панели демо — на опубликованном сайте ничего не меняется')));
+      document.querySelectorAll('[data-apply], #apply-all').forEach((button) => button.addEventListener('click', () => showToast('Изменения применены', 'Изменения видны только в этой панели')));
       document.querySelector('#reset-all').addEventListener('click', () => { window.location.reload(); });
       document.querySelector('.notice-close').addEventListener('click', () => document.querySelector('.notice').remove());
       toast.querySelector('button').addEventListener('click', () => toast.classList.remove('show'));
       document.querySelectorAll('[data-reset-fields]').forEach((button) => button.addEventListener('click', () => {
         const fields = button.dataset.resetFields === 'content' ? ['name', 'eyebrow', 'headline', 'intro', 'heroImage'] : ['phone', 'address', 'hours', 'vk', 'telegram'];
         fields.forEach((key) => { const field = document.querySelector(`[data-field="${key}"]`); if (field) { field.value = seed[key] || ''; field.dispatchEvent(new Event('input', { bubbles: true })); } });
-        showToast('Исходные данные восстановлены', 'Только в панели демо');
+        showToast('Исходные данные восстановлены', 'Изменения видны только в этой панели');
       }));
       renderServices();
       renderWorks();
