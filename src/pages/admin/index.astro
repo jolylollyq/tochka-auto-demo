@@ -3,12 +3,12 @@ import data from '../../content/site.json';
 
 const baseUrl = import.meta.env.BASE_URL;
 const imageUrl = (value) => `${baseUrl}${value.replace(/^\//, '')}`;
-const sections = [
-  { label: 'Обзор', href: '#overview', icon: '◫' },
-  { label: 'Страница сайта', href: '#site-content', icon: '▤' },
-  { label: 'Услуги', href: '#services', icon: '⚙' },
-  { label: 'Примеры работ', href: '#works', icon: '▧' },
-  { label: 'Контакты', href: '#contacts', icon: '⌖' },
+const nav = [
+  { id: 'overview', label: 'Главная', icon: '⌂' },
+  { id: 'content', label: 'Страница сайта', icon: '▤' },
+  { id: 'services', label: 'Услуги', icon: '⚙', count: data.services.length },
+  { id: 'works', label: 'Примеры работ', icon: '▧', count: data.cases.length },
+  { id: 'contacts', label: 'Контакты', icon: '⌖' },
 ];
 ---
 
@@ -19,181 +19,191 @@ const sections = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <meta name="theme-color" content="#202720" />
-    <title>Управление сайтом · {data.name}</title>
+    <title>Админ-панель · {data.name}</title>
   </head>
-  <body>
+  <body data-base-url={baseUrl}>
     <div class="admin-shell">
-      <aside class="sidebar" aria-label="Разделы панели">
-        <a class="brand" href="#overview" aria-label="ТОЧКА, обзор">
-          <span class="brand-mark" aria-hidden="true">т.</span>
-          <span class="brand-name">ТОЧКА<small>АВТОСЕРВИС</small></span>
+      <aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="ТОЧКА — админ-панель">
+          <span class="brand-mark">т.</span><span class="brand-name">ТОЧКА<small>АВТОСЕРВИС</small></span>
         </a>
-
-        <p class="sidebar-caption">Рабочее пространство</p>
-        <nav class="side-nav">
-          {sections.map((section, index) => (
-            <a class:list={['nav-link', { active: index === 0 }]} href={section.href} aria-current={index === 0 ? 'page' : undefined}>
-              <span class="nav-icon" aria-hidden="true">{section.icon}</span>{section.label}
-              {section.label === 'Услуги' && <span class="nav-count">{data.services.length}</span>}
-              {section.label === 'Примеры работ' && <span class="nav-count">{data.cases.length}</span>}
-            </a>
-          ))}
+        <div class="workspace"><span class="workspace-avatar">Т</span><span><b>Демо автосервис</b><small>рабочее пространство</small></span><span class="chevron">⌄</span></div>
+        <p class="nav-caption">УПРАВЛЕНИЕ</p>
+        <nav class="side-nav" aria-label="Разделы панели">
+          {nav.map((item, index) => <button class:list={['nav-link', { active: index === 0 }]} type="button" data-target={item.id} aria-current={index === 0 ? 'page' : undefined}><span class="nav-icon">{item.icon}</span><span>{item.label}</span>{item.count && <span class="nav-count" data-count-for={item.id}>{item.count}</span>}</button>)}
         </nav>
-
         <div class="sidebar-bottom">
-          <div class="demo-mark"><span></span> Демо-панель</div>
-          <p>Только просмотр.<br />Изменения не сохраняются.</p>
-          <a class="public-link" href={baseUrl} target="_blank" rel="noopener">Открыть сайт <span aria-hidden="true">↗</span></a>
+          <div class="demo-mark"><i></i> ДЕМО-РЕЖИМ</div>
+          <p>Можно менять и добавлять элементы. После перезагрузки всё вернётся к исходному виду.</p>
+          <a class="public-link" href={baseUrl} target="_blank" rel="noopener">Открыть сайт <span>↗</span></a>
         </div>
       </aside>
 
-      <main id="overview" class="main-area">
+      <main class="main-area">
         <header class="topbar">
-          <div class="crumb"><span>ТОЧКА</span><i>/</i> Обзор</div>
-          <div class="topbar-right"><span class="preview-badge"><i></i> Демо · 2026</span><a href={baseUrl} target="_blank" rel="noopener">Публичная страница <b aria-hidden="true">↗</b></a></div>
+          <div class="breadcrumbs"><span>ТОЧКА</span><i>/</i><b id="crumb-label">Главная</b></div>
+          <div class="top-actions"><span class="demo-pill"><i></i> Черновик · демо</span><a class="preview-link" href={baseUrl} target="_blank" rel="noopener">Предпросмотр сайта <b>↗</b></a><button class="apply-button" id="apply-all" type="button">Применить изменения <span>✓</span></button></div>
         </header>
 
         <div class="content-wrap">
-          <section class="welcome" aria-labelledby="welcome-title">
-            <div>
-              <p class="overline"><span class="orange-dot"></span> Панель управления</p>
-              <h1 id="welcome-title">Сайт в порядке.</h1>
-              <p class="welcome-copy">Здесь собраны основные разделы сайта автосервиса {data.name}.</p>
+          <section class="page-panel active-panel" id="panel-overview" data-panel="overview">
+            <div class="page-heading"><div><p class="eyebrow"><i></i> АДМИНИСТРАТИВНАЯ ПАНЕЛЬ</p><h1>Добро пожаловать!</h1><p class="subheading">Управляйте содержимым сайта автосервиса в одном месте.</p></div><button class="button-secondary" type="button" data-go="content">✎ <span>Настроить главную</span></button></div>
+            <div class="notice"><span class="notice-icon">✳</span><div><b>Интерактивное демо</b><span>Поля можно редактировать, услуги и работы — добавлять и удалять. Это только макет: публикации и сохранения нет.</span></div><button class="notice-close" type="button" aria-label="Скрыть подсказку">×</button></div>
+            <div class="metric-grid">
+              <button class="metric-card" data-go="services" type="button"><span class="metric-symbol olive">⚙</span><span class="metric-copy"><b id="metric-services">{data.services.length}</b><small>Услуг на сайте</small></span><span class="metric-arrow">↗</span></button>
+              <button class="metric-card" data-go="works" type="button"><span class="metric-symbol orange">▧</span><span class="metric-copy"><b id="metric-works">{data.cases.length}</b><small>Примеров работ</small></span><span class="metric-arrow">↗</span></button>
+              <button class="metric-card" data-go="contacts" type="button"><span class="metric-symbol blue">⌖</span><span class="metric-copy"><b>Контакты</b><small>Данные автосервиса</small></span><span class="metric-arrow">↗</span></button>
             </div>
-            <div class="welcome-note"><span class="note-icon">i</span><p><b>Демонстрационный режим</b><br />Панель показывает, как может выглядеть управление сайтом. Данные здесь нельзя изменить.</p></div>
-          </section>
-
-          <section class="stat-row" aria-label="Сводка по содержимому">
-            <article class="stat-box"><span class="stat-icon olive">▤</span><div><b>{data.services.length}</b><span>услуг на сайте</span></div><small>раздел услуг</small></article>
-            <article class="stat-box"><span class="stat-icon orange">▧</span><div><b>{data.cases.length}</b><span>примера работ</span></div><small>портфолио</small></article>
-            <article class="stat-box"><span class="stat-icon charcoal">⌖</span><div><b>Контакты</b><span>указаны на странице</span></div><small>контактный блок</small></article>
-          </section>
-
-          <section class="overview-grid" id="site-content">
-            <article class="panel site-panel">
-              <div class="panel-head"><div><p class="overline">Публичная страница</p><h2>Основная информация</h2></div><span class="read-only">Только просмотр</span></div>
-              <div class="site-preview">
-                <img src={imageUrl(data.heroImage)} alt="Превью главного экрана сайта автосервиса" />
-                <div class="preview-overlay"><span>САЙТ · ДЕМО</span><a href={baseUrl} target="_blank" rel="noopener" aria-label="Открыть публичный сайт">↗</a></div>
-              </div>
-              <div class="site-details">
-                <div class="detail-row"><span>Название</span><b>{data.name}</b></div>
-                <div class="detail-row"><span>Заголовок</span><b>{data.headline}</b></div>
-                <div class="detail-row"><span>Адрес</span><b>{data.address}</b></div>
-                <div class="detail-row"><span>Телефон</span><b>{data.phone}</b></div>
-                <div class="detail-row"><span>Режим работы</span><b>{data.hours}</b></div>
-              </div>
-            </article>
-
-            <article class="panel status-panel">
-              <div class="panel-head"><div><p class="overline">Состояние</p><h2>Что видит посетитель</h2></div><span class="status-live"><i></i> Опубликовано</span></div>
-              <div class="status-body">
-                <div class="status-symbol" aria-hidden="true">✓</div>
-                <h3>Страница доступна</h3>
-                <p>Публичная демо-страница открывается по ссылке. Форма записи показывает демонстрационное подтверждение и не отправляет заявку.</p>
-                <a class="outline-link" href={baseUrl} target="_blank" rel="noopener">Посмотреть сайт <span aria-hidden="true">↗</span></a>
-              </div>
-              <div class="status-foot"><span>Редактирование</span><b>Отключено в демо</b></div>
-            </article>
-          </section>
-
-          <section class="panel list-panel" id="services">
-            <div class="panel-head"><div><p class="overline">Содержание сайта</p><h2>Услуги</h2></div><span class="section-total">{data.services.length} позиций</span></div>
-            <div class="service-list">
-              {data.services.map((service, index) => (
-                <div class="service-row"><span class="service-index">{String(index + 1).padStart(2, '0')}</span><div class="service-info"><b>{service.title}</b><span>{service.description}</span></div><span class="service-time">{service.time}</span><b class="service-price">{service.price}</b><span class="view-only">Просмотр</span></div>
-              ))}
+            <div class="overview-grid">
+              <article class="card quick-card"><div class="card-heading"><div><p class="eyebrow">БЫСТРЫЙ ДОСТУП</p><h2>Что хотите изменить?</h2></div><span class="heading-icon">✳</span></div>
+                <button class="quick-row" type="button" data-go="content"><span class="quick-icon">▤</span><span><b>Текст и первый экран</b><small>Название, заголовок, описание и фото</small></span><i>→</i></button>
+                <button class="quick-row" type="button" data-go="services"><span class="quick-icon orange-bg">⚙</span><span><b>Список услуг</b><small>Описания, цены и новые позиции</small></span><i>→</i></button>
+                <button class="quick-row" type="button" data-go="works"><span class="quick-icon blue-bg">▧</span><span><b>Примеры работ</b><small>Добавьте карточку для портфолио</small></span><i>→</i></button>
+                <button class="quick-row" type="button" data-go="contacts"><span class="quick-icon">⌖</span><span><b>Контактные данные</b><small>Телефон, адрес и график</small></span><i>→</i></button>
+              </article>
+              <article class="card preview-card"><div class="card-heading"><div><p class="eyebrow">КАК ЭТО ВЫГЛЯДИТ</p><h2>Мини-превью сайта</h2></div><a class="subtle-link" href={baseUrl} target="_blank" rel="noopener">Открыть ↗</a></div>
+                <div class="mini-site"><div class="mini-top"><b>т.</b><span>АВТОСЕРВИС</span><i>☰</i></div><div class="mini-photo" style={`background-image:url('${imageUrl(data.heroImage)}')`}><div class="mini-photo-shade"></div><div class="mini-caption"><small>НЕЗАВИСИМЫЙ АВТОСЕРВИС</small><b data-preview="headline">{data.headline}</b><span data-preview="address">{data.address}</span><button type="button" data-go="contacts">Записаться →</button></div></div></div>
+                <p class="preview-hint"><i></i> Это демонстрация интерфейса панели. Сайт по ссылке не изменяется.</p>
+              </article>
             </div>
+            <div class="bottom-row"><div><span class="bottom-icon">◷</span><span><b>Работаете в демо-режиме</b><small>Любые действия видны только в этой вкладке.</small></span></div><button type="button" class="text-button" id="reset-all">Сбросить макет <span>↺</span></button></div>
           </section>
 
-          <section class="panel list-panel works-panel" id="works">
-            <div class="panel-head"><div><p class="overline">Портфолио</p><h2>Примеры работ</h2></div><span class="section-total">{data.cases.length} карточки</span></div>
-            <div class="works-list">
-              {data.cases.map((item) => (
-                <article class="work-row"><img src={imageUrl(item.image)} alt={item.alt} /><div><span class="work-category">{item.category}</span><h3>{item.title}</h3><p>{item.car} · {item.time}</p></div><b>{item.price}</b><span class="view-only">Просмотр</span></article>
-              ))}
-            </div>
+          <section class="page-panel" id="panel-content" data-panel="content" hidden>
+            <div class="page-heading"><div><p class="eyebrow"><i></i> РЕДАКТОР СТРАНИЦЫ</p><h1>Главная страница</h1><p class="subheading">Поменяйте текст и сразу посмотрите, как он будет выглядеть.</p></div><button class="apply-button mobile-apply" data-apply type="button">Применить изменения ✓</button></div>
+            <div class="editor-layout"><article class="card editor-card"><div class="card-heading"><div><p class="eyebrow">ОСНОВНАЯ ИНФОРМАЦИЯ</p><h2>Первый экран сайта</h2></div><span class="editing-label">✎ Редактирование</span></div>
+              <label class="field"><span>Название компании</span><input data-field="name" value={data.name} /></label>
+              <label class="field"><span>Короткая подпись</span><input data-field="eyebrow" value={data.eyebrow} /></label>
+              <label class="field"><span>Заголовок</span><input data-field="headline" value={data.headline} /><small>Основной крупный текст на первом экране.</small></label>
+              <label class="field"><span>Описание</span><textarea rows="4" data-field="intro">{data.intro}</textarea></label>
+              <label class="field"><span>Фоновое фото</span><select data-field="heroImage"><option value={data.heroImage}>Фото автосервиса</option><option value="/images/brakes.webp">Тормозная система</option><option value="/images/engine.webp">Подкапотное пространство</option><option value="/images/suspension.webp">Подвеска автомобиля</option></select></label>
+              <div class="editor-footer"><button class="button-secondary" type="button" data-reset-fields="content">Вернуть исходный текст</button><button class="apply-button" data-apply type="button">Применить <span>✓</span></button></div>
+            </article><article class="card live-preview"><div class="card-heading"><div><p class="eyebrow">ПРЕДПРОСМОТР</p><h2>Первый экран</h2></div><span class="live-badge"><i></i> Обновляется</span></div><div class="large-preview" style={`background-image:url('${imageUrl(data.heroImage)}')`} data-hero-preview><div class="large-shade"></div><div class="large-brand"><b>т.</b><span data-preview="name">{data.name}</span></div><div class="large-caption"><span data-preview="eyebrow">{data.eyebrow}</span><h3 data-preview="headline">{data.headline}</h3><p data-preview="intro">{data.intro}</p><button type="button" data-go="contacts">Записаться</button></div><div class="large-address"><span>⌖</span><b data-preview="address">{data.address}</b></div></div><p class="preview-caption">Макет меняется прямо здесь. Публичная страница остаётся прежней.</p></article></div>
           </section>
 
-          <section class="contact-strip" id="contacts">
-            <div><p class="overline">Связь с автосервисом</p><h2>Контактные данные на сайте</h2></div>
-            <div class="contact-item"><span>Телефон</span><b>{data.phone}</b></div>
-            <div class="contact-item"><span>Адрес</span><b>{data.address}</b></div>
-            <div class="contact-item"><span>Часы работы</span><b>{data.hours}</b></div>
+          <section class="page-panel" id="panel-services" data-panel="services" hidden>
+            <div class="page-heading"><div><p class="eyebrow"><i></i> СОДЕРЖАНИЕ САЙТА</p><h1>Услуги</h1><p class="subheading">Редактируйте карточки или добавляйте новые.</p></div><button class="apply-button" data-apply type="button">Применить изменения <span>✓</span></button></div>
+            <div class="toolbar"><div><b id="services-count">{data.services.length} услуг</b><span>· макет отображения раздела на сайте</span></div><button class="add-button" id="add-service" type="button"><b>＋</b> Добавить услугу</button></div>
+            <div class="editable-list" id="services-list"></div>
+            <div class="editor-note"><span>i</span> Нажмите на поле, чтобы изменить его. Кнопка «Применить» покажет результат только в демо-панели.</div>
           </section>
 
-          <footer class="page-footer"><span>ТОЧКА · Демо панели управления</span><span>Показаны демонстрационные данные. Ничего не редактируется и не сохраняется.</span></footer>
+          <section class="page-panel" id="panel-works" data-panel="works" hidden>
+            <div class="page-heading"><div><p class="eyebrow"><i></i> ПОРТФОЛИО</p><h1>Примеры работ</h1><p class="subheading">Карточки работ в портфолио автосервиса.</p></div><button class="apply-button" data-apply type="button">Применить изменения <span>✓</span></button></div>
+            <div class="toolbar"><div><b id="works-count">{data.cases.length} карточки</b><span>· можно добавить свою</span></div><button class="add-button" id="add-work" type="button"><b>＋</b> Добавить работу</button></div>
+            <div class="works-editor-list" id="works-list"></div>
+            <div class="editor-note"><span>i</span> Добавьте карточку, поменяйте описание или удалите ненужную. Изменения существуют только в этой вкладке.</div>
+          </section>
+
+          <section class="page-panel" id="panel-contacts" data-panel="contacts" hidden>
+            <div class="page-heading"><div><p class="eyebrow"><i></i> ДАННЫЕ АВТОСЕРВИСА</p><h1>Контакты</h1><p class="subheading">Обновите контактные данные в демонстрационном макете.</p></div><button class="apply-button" data-apply type="button">Применить изменения <span>✓</span></button></div>
+            <div class="contacts-layout"><article class="card editor-card"><div class="card-heading"><div><p class="eyebrow">КАК С ВАМИ СВЯЗАТЬСЯ</p><h2>Контактная информация</h2></div><span class="editing-label">✎ Редактирование</span></div>
+              <label class="field"><span>Номер телефона</span><input data-field="phone" value={data.phone} /><small>В демо номер не совершает звонок.</small></label>
+              <label class="field"><span>Адрес автосервиса</span><input data-field="address" value={data.address} /></label>
+              <label class="field"><span>График работы</span><input data-field="hours" value={data.hours} /></label>
+              <label class="field"><span>Ссылка на ВКонтакте</span><input data-field="vk" placeholder="https://vk.com/..." /></label>
+              <label class="field"><span>Ссылка на Telegram</span><input data-field="telegram" placeholder="https://t.me/..." /></label>
+              <div class="editor-footer"><button class="button-secondary" type="button" data-reset-fields="contacts">Вернуть исходные данные</button><button class="apply-button" data-apply type="button">Применить <span>✓</span></button></div>
+            </article><article class="card contact-preview"><div class="card-heading"><div><p class="eyebrow">ПРЕДПРОСМОТР</p><h2>Контакты в подвале сайта</h2></div><span class="live-badge"><i></i> Обновляется</span></div><div class="contact-preview-body"><div class="contact-brand"><b>т.</b><span data-preview="name">{data.name}</span></div><div class="contact-preview-row"><span>ПОЗВОНИТЬ</span><b data-preview="phone">{data.phone}</b></div><div class="contact-preview-row"><span>МЫ НАХОДИМСЯ</span><b data-preview="address">{data.address}</b></div><div class="contact-preview-row"><span>РАБОТАЕМ</span><b data-preview="hours">{data.hours}</b></div><div class="social-preview"><button type="button" disabled>ВКонтакте ↗</button><button type="button" disabled>Telegram ↗</button></div></div></article></div>
+          </section>
+
+          <footer class="page-footer"><span>ТОЧКА · интерактивный макет админ-панели</span><span>Действия не сохраняются и не меняют опубликованный сайт</span></footer>
         </div>
       </main>
     </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><div><b>Готово!</b><small>Изменения применены в демо-макете</small></div><button type="button" aria-label="Закрыть уведомление">×</button></div>
+    <script type="application/json" id="admin-seed" set:html={JSON.stringify(data)}></script>
+    <script>
+      const seed = JSON.parse(document.querySelector('#admin-seed').textContent);
+      const siteBase = document.body.dataset.baseUrl;
+      const clone = (value) => JSON.parse(JSON.stringify(value));
+      let state = clone(seed);
+      const labels = { overview: 'Главная', content: 'Страница сайта', services: 'Услуги', works: 'Примеры работ', contacts: 'Контакты' };
+      const toast = document.querySelector('#toast');
+      let toastTimer;
+
+      function showToast(title = 'Готово!', message = 'Изменения применены в демо-макете') {
+        toast.querySelector('b').textContent = title;
+        toast.querySelector('small').textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3300);
+      }
+      function goTo(id) {
+        document.querySelectorAll('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== id; panel.classList.toggle('active-panel', panel.dataset.panel === id); });
+        document.querySelectorAll('.nav-link').forEach((button) => { const active = button.dataset.target === id; button.classList.toggle('active', active); active ? button.setAttribute('aria-current', 'page') : button.removeAttribute('aria-current'); });
+        document.querySelector('#crumb-label').textContent = labels[id] || labels.overview;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      document.querySelectorAll('[data-target]').forEach((button) => button.addEventListener('click', () => goTo(button.dataset.target)));
+      document.querySelectorAll('[data-go]').forEach((button) => button.addEventListener('click', () => goTo(button.dataset.go)));
+      document.querySelectorAll('[data-field]').forEach((field) => field.addEventListener('input', () => {
+        const key = field.dataset.field;
+        state[key] = field.value;
+        document.querySelectorAll(`[data-preview="${key}"]`).forEach((node) => { node.textContent = field.value || `Ваш ${key === 'headline' ? 'заголовок' : key}`; });
+        if (key === 'heroImage') document.querySelectorAll('[data-hero-preview]').forEach((node) => { node.style.backgroundImage = `url('${siteBase}${field.value.replace(/^\//, '')}')`; });
+      }));
+
+      const esc = (value = '') => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+      function renderServices() {
+        const list = document.querySelector('#services-list');
+        list.innerHTML = state.services.map((service, index) => `<article class="editable-card service-edit-card" data-index="${index}">
+          <div class="item-number">${String(index + 1).padStart(2, '0')}</div><div class="editable-fields">
+            <label class="field"><span>Название услуги</span><input data-service="title" value="${esc(service.title)}" placeholder="Например, шиномонтаж"></label>
+            <label class="field"><span>Краткое описание</span><textarea data-service="description" rows="2" placeholder="Что входит в услугу">${esc(service.description)}</textarea></label>
+            <div class="two-fields"><label class="field"><span>Цена</span><input data-service="price" value="${esc(service.price)}" placeholder="от 1 000 ₽"></label><label class="field"><span>Время</span><input data-service="time" value="${esc(service.time)}" placeholder="от 1 часа"></label></div>
+          </div><button type="button" class="delete-button" data-delete-service="${index}" aria-label="Удалить услугу">×</button>
+        </article>`).join('') || '<div class="empty-state"><b>Здесь пока пусто</b><span>Нажмите «Добавить услугу», чтобы создать первую карточку.</span></div>';
+        document.querySelector('#services-count').textContent = `${state.services.length} ${plural(state.services.length, 'услуга', 'услуги', 'услуг')}`;
+        document.querySelector('#metric-services').textContent = state.services.length;
+        document.querySelector('[data-count-for="services"]').textContent = state.services.length;
+        list.querySelectorAll('[data-service]').forEach((field) => field.addEventListener('input', () => { state.services[Number(field.closest('[data-index]').dataset.index)][field.dataset.service] = field.value; }));
+        list.querySelectorAll('[data-delete-service]').forEach((button) => button.addEventListener('click', () => { state.services.splice(Number(button.dataset.deleteService), 1); renderServices(); showToast('Карточка удалена', 'Удаление пока видно только в демо'); }));
+      }
+      function renderWorks() {
+        const list = document.querySelector('#works-list');
+        list.innerHTML = state.cases.map((item, index) => `<article class="editable-card work-edit-card" data-work-index="${index}">
+          <div class="work-thumb" style="background-image:url('${esc(`${siteBase}${(item.image || seed.heroImage).replace(/^\//, '')}`)}')">▧</div><div class="editable-fields">
+            <div class="two-fields"><label class="field"><span>Название работы</span><input data-work="title" value="${esc(item.title)}" placeholder="Например, замена масла"></label><label class="field"><span>Категория</span><input data-work="category" value="${esc(item.category)}" placeholder="Обслуживание"></label></div>
+            <div class="two-fields"><label class="field"><span>Автомобиль</span><input data-work="car" value="${esc(item.car)}" placeholder="Седан · 2020"></label><label class="field"><span>Стоимость</span><input data-work="price" value="${esc(item.price)}" placeholder="от 5 000 ₽"></label></div>
+            <label class="field"><span>Описание результата</span><textarea data-work="result" rows="2" placeholder="Что было сделано">${esc(item.result || item.solution || '')}</textarea></label>
+          </div><button type="button" class="delete-button" data-delete-work="${index}" aria-label="Удалить работу">×</button>
+        </article>`).join('') || '<div class="empty-state"><b>Портфолио пока пустое</b><span>Добавьте демонстрационный пример работы.</span></div>';
+        document.querySelector('#works-count').textContent = `${state.cases.length} ${plural(state.cases.length, 'карточка', 'карточки', 'карточек')}`;
+        document.querySelector('#metric-works').textContent = state.cases.length;
+        document.querySelector('[data-count-for="works"]').textContent = state.cases.length;
+        list.querySelectorAll('[data-work]').forEach((field) => field.addEventListener('input', () => { state.cases[Number(field.closest('[data-work-index]').dataset.workIndex)][field.dataset.work] = field.value; }));
+        list.querySelectorAll('[data-delete-work]').forEach((button) => button.addEventListener('click', () => { state.cases.splice(Number(button.dataset.deleteWork), 1); renderWorks(); showToast('Карточка удалена', 'Удаление пока видно только в демо'); }));
+      }
+      function plural(number, one, few, many) { const mod10 = number % 10; const mod100 = number % 100; return mod10 === 1 && mod100 !== 11 ? one : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? few : many; }
+      document.querySelector('#add-service').addEventListener('click', () => { state.services.push({ title: '', description: '', price: '', time: '' }); renderServices(); document.querySelector('#services-list .editable-card:last-child input').focus(); });
+      document.querySelector('#add-work').addEventListener('click', () => { state.cases.push({ title: '', category: 'Новая работа', car: '', price: '', result: '', image: seed.heroImage }); renderWorks(); document.querySelector('#works-list .editable-card:last-child input').focus(); });
+      document.querySelectorAll('[data-apply], #apply-all').forEach((button) => button.addEventListener('click', () => showToast('Изменения применены', 'Только в панели демо — на опубликованном сайте ничего не меняется')));
+      document.querySelector('#reset-all').addEventListener('click', () => { window.location.reload(); });
+      document.querySelector('.notice-close').addEventListener('click', () => document.querySelector('.notice').remove());
+      toast.querySelector('button').addEventListener('click', () => toast.classList.remove('show'));
+      document.querySelectorAll('[data-reset-fields]').forEach((button) => button.addEventListener('click', () => {
+        const fields = button.dataset.resetFields === 'content' ? ['name', 'eyebrow', 'headline', 'intro', 'heroImage'] : ['phone', 'address', 'hours', 'vk', 'telegram'];
+        fields.forEach((key) => { const field = document.querySelector(`[data-field="${key}"]`); if (field) { field.value = seed[key] || ''; field.dispatchEvent(new Event('input', { bubbles: true })); } });
+        showToast('Исходные данные восстановлены', 'Только в панели демо');
+      }));
+      renderServices();
+      renderWorks();
+    </script>
   </body>
 </html>
 
-<style>
-  :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#252b25;background:#f2f3ed;font-synthesis:none;text-rendering:optimizeLegibility}
-  *{box-sizing:border-box}
-  body{margin:0;min-width:320px}
-  a{color:inherit;text-decoration:none}
-  .admin-shell{min-height:100vh;display:grid;grid-template-columns:238px minmax(0,1fr)}
-  .sidebar{background:#202720;color:#eef0e7;padding:27px 16px 20px;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh}
-  .brand{display:flex;align-items:center;gap:11px;padding:0 12px 39px}
-  .brand-mark{width:39px;height:39px;display:grid;place-items:center;background:#f15b35;color:#202720;font-size:22px;font-weight:800;letter-spacing:-2px;border-radius:2px}
-  .brand-name{font-size:15px;font-weight:750;letter-spacing:.06em}.brand-name small{display:block;font-size:8px;font-weight:500;letter-spacing:.22em;color:#b0b8a8;margin-top:4px}
-  .sidebar-caption{font-size:10px;color:#8f9989;padding:0 13px;margin:0 0 11px}
-  .side-nav{display:grid;gap:4px}
-  .nav-link{min-height:42px;padding:0 13px;display:flex;align-items:center;gap:12px;color:#c1c8ba;font-size:12px;border-radius:3px;transition:background .16s,color .16s}
-  .nav-link:hover,.nav-link:focus-visible{background:#303a30;color:#fff;outline:none}
-  .nav-link.active{background:#39443a;color:#fff;box-shadow:inset 3px 0 #f15b35}
-  .nav-icon{width:17px;text-align:center;color:#aab39e;font-size:15px}.active .nav-icon{color:#f47c5d}
-  .nav-count{margin-left:auto;color:#aab39e;font-size:10px}
-  .sidebar-bottom{margin-top:auto;border-top:1px solid #414a3f;padding:18px 12px 0}
-  .demo-mark{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:650}.demo-mark span,.preview-badge i,.status-live i{width:7px;height:7px;border-radius:50%;background:#f15b35;display:inline-block}
-  .sidebar-bottom p{font-size:10px;line-height:1.6;color:#aeb7a6;margin:10px 0 17px}
-  .public-link{display:flex;justify-content:space-between;align-items:center;border:1px solid #525d50;padding:11px 12px;font-size:11px;border-radius:3px}.public-link:hover{border-color:#ef795a;color:#fff}
-  .main-area{min-width:0}
-  .topbar{height:64px;background:#fbfcf7;border-bottom:1px solid #e0e3d9;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(22px,4vw,58px);position:sticky;top:0;z-index:5}
-  .crumb{display:flex;gap:11px;align-items:center;font-size:11px;color:#777f72}.crumb span{font-weight:700;color:#343b33}.crumb i{font-style:normal;color:#c2c8bb}
-  .topbar-right{display:flex;align-items:center;gap:24px;font-size:10px;color:#555e52}.topbar-right>a:hover{color:#df4e2b}.topbar-right b{color:#e65b39;margin-left:4px}
-  .preview-badge{display:flex;align-items:center;gap:7px;background:#f1f2eb;padding:8px 10px;border-radius:2px;color:#596252}.preview-badge i{background:#72886a;width:6px;height:6px}
-  .content-wrap{width:min(1120px,100%);margin:0 auto;padding:39px clamp(22px,4vw,58px) 22px}
-  .welcome{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:25px}
-  .overline{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#77806f;margin:0 0 9px;font-weight:650}
-  .orange-dot{display:inline-block;width:7px;height:7px;background:#f15b35;border-radius:50%;margin:0 7px 1px 0}
-  h1{font-size:clamp(30px,3vw,42px);letter-spacing:-.045em;line-height:1.1;margin:0;font-weight:640;color:#222922}
-  .welcome-copy{font-size:12px;color:#71796e;margin:10px 0 0;line-height:1.6}
-  .welcome-note{display:flex;gap:11px;max-width:345px;padding:12px 14px;background:#e8ece0;border-left:2px solid #87977d}
-  .note-icon{width:18px;height:18px;border:1px solid #8a9880;color:#6e8065;border-radius:50%;display:grid;place-items:center;font:600 11px Georgia;flex:none}
-  .welcome-note p{font-size:10px;line-height:1.55;color:#626b5b;margin:0}.welcome-note b{font-size:10px;color:#384335;font-weight:700}
-  .stat-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
-  .stat-box{min-height:88px;display:flex;align-items:center;gap:12px;background:#fbfcf7;border:1px solid #e1e4da;padding:15px 16px;position:relative}
-  .stat-icon{height:34px;width:34px;display:grid;place-items:center;font-size:16px;border-radius:2px;flex:none}.stat-icon.olive{background:#e7ecdf;color:#5b7452}.stat-icon.orange{background:#fff0e8;color:#e45a36}.stat-icon.charcoal{background:#e8ebe4;color:#485546}
-  .stat-box>div{display:flex;flex-direction:column;gap:3px}.stat-box>div b{font-size:20px;line-height:1;font-weight:650;letter-spacing:-.04em}.stat-box>div span{font-size:10px;color:#71796d}
-  .stat-box>small{margin-left:auto;align-self:flex-start;color:#899183;font-size:9px;white-space:nowrap}
-  .overview-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(275px,.82fr);gap:14px;margin-bottom:14px}
-  .panel{background:#fbfcf7;border:1px solid #e1e4da}
-  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:19px 21px 15px}
-  .panel-head .overline{margin-bottom:5px;font-size:8px}.panel-head h2{font-size:16px;letter-spacing:-.025em;font-weight:620;margin:0}
-  .read-only,.section-total{font-size:9px;color:#70796c;background:#f0f2eb;padding:7px 9px;white-space:nowrap}
-  .site-preview{height:152px;position:relative;overflow:hidden;background:#30382e;margin:0 21px}
-  .site-preview img{width:100%;height:100%;object-fit:cover;object-position:center 56%;opacity:.8;display:block}
-  .preview-overlay{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:space-between;padding:12px;color:#f8f6ee;font-size:8px;letter-spacing:.1em}.preview-overlay a{width:27px;height:27px;display:grid;place-items:center;background:#f15b35;color:#202720;font-size:15px}
-  .site-details{padding:10px 21px 15px}
-  .detail-row{display:grid;grid-template-columns:115px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid #edf0e8;font-size:10px;line-height:1.45}.detail-row:last-child{border-bottom:0}.detail-row>span{color:#81897d}.detail-row>b{font-weight:560;color:#343b33}
-  .status-live{display:flex;align-items:center;gap:6px;color:#66815b;background:#edf2e8;padding:7px 9px;font-size:9px;white-space:nowrap}.status-live i{background:#728d64;width:6px;height:6px}
-  .status-body{padding:20px 22px 18px;min-height:310px;display:flex;flex-direction:column;align-items:flex-start}
-  .status-symbol{width:36px;height:36px;background:#e8eee1;color:#627b56;display:grid;place-items:center;font-size:18px;border-radius:50%;margin-bottom:15px}
-  .status-body h3{font-size:16px;letter-spacing:-.02em;margin:0;font-weight:620}.status-body p{font-size:11px;line-height:1.7;color:#70796d;margin:9px 0 18px;max-width:340px}
-  .outline-link{margin-top:auto;border:1px solid #cfd5c8;padding:10px 12px;font-size:10px;display:flex;gap:24px;align-items:center}.outline-link:hover{border-color:#ea6848;color:#c94c2d}.outline-link span{font-size:13px}
-  .status-foot{border-top:1px solid #e9ece4;display:flex;justify-content:space-between;gap:10px;padding:13px 22px;color:#81897c;font-size:9px}.status-foot b{font-weight:600;color:#596453}
-  .list-panel{margin-bottom:14px}.service-list{padding:0 21px 8px}
-  .service-row{display:grid;grid-template-columns:30px minmax(130px,1fr) minmax(70px,100px) 95px 65px;gap:12px;align-items:center;min-height:57px;border-top:1px solid #edf0e8;font-size:10px}
-  .service-index{font-size:9px;color:#9aa193}.service-info{display:flex;flex-direction:column;gap:4px;min-width:0}.service-info b{font-size:11px;font-weight:620}.service-info span{font-size:9px;color:#858d80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:410px}.service-time{color:#70796c}.service-price{font-weight:600}.view-only{justify-self:end;color:#90988a;background:#f0f2eb;padding:6px 8px;font-size:8px;white-space:nowrap}
-  .works-list{padding:0 21px 8px}.work-row{display:grid;grid-template-columns:54px minmax(150px,1fr) 100px 65px;gap:13px;align-items:center;min-height:68px;border-top:1px solid #edf0e8}.work-row>img{width:54px;height:43px;object-fit:cover}.work-row>div{min-width:0}.work-category{font-size:8px;color:#77806f}.work-row h3{font-size:11px;margin:3px 0;font-weight:620}.work-row p{font-size:9px;color:#858d80;margin:0}.work-row>b{font-size:10px;font-weight:600}
-  .contact-strip{display:grid;grid-template-columns:1.4fr 1fr 1.2fr 1fr;gap:18px;align-items:center;background:#e8ebe2;border-left:3px solid #f15b35;padding:17px 20px;margin:16px 0}
-  .contact-strip .overline{font-size:8px;margin-bottom:5px}.contact-strip h2{font-size:13px;margin:0;font-weight:620}.contact-item{display:flex;flex-direction:column;gap:6px;min-width:0}.contact-item span{font-size:8px;color:#77806f}.contact-item b{font-size:9px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
-  .page-footer{padding:16px 0 5px;display:flex;justify-content:space-between;gap:16px;color:#899183;font-size:8px;line-height:1.5}
-  a:focus-visible{outline:2px solid #f15b35;outline-offset:3px}
-  @media(max-width:980px){.admin-shell{grid-template-columns:205px minmax(0,1fr)}.sidebar{padding-left:11px;padding-right:11px}.content-wrap{padding-left:25px;padding-right:25px}.topbar{padding-left:25px;padding-right:25px}.overview-grid{grid-template-columns:1fr}.status-body{min-height:230px}.contact-strip{grid-template-columns:1fr 1fr}.contact-strip>div:first-child{grid-column:1/-1}}
-  @media(max-width:680px){.admin-shell{display:block}.sidebar{position:relative;height:auto;min-height:0;padding:15px 16px 10px}.brand{padding:0 2px 14px}.brand-mark{width:33px;height:33px}.sidebar-caption,.sidebar-bottom{display:none}.side-nav{display:flex;overflow-x:auto;gap:5px;padding-bottom:2px;scrollbar-width:thin}.nav-link{min-height:35px;padding:0 10px;font-size:10px;white-space:nowrap;gap:7px}.nav-icon{font-size:13px}.nav-count{margin-left:1px}.topbar{height:49px;padding:0 17px;position:static}.topbar-right{gap:10px;font-size:9px}.preview-badge{padding:6px 7px}.content-wrap{padding:26px 16px 16px}.welcome{display:block;margin-bottom:18px}.welcome h1{font-size:32px}.welcome-copy{font-size:11px}.welcome-note{margin-top:15px;max-width:none}.stat-row{gap:7px}.stat-box{min-height:80px;padding:10px 8px;gap:7px;align-items:flex-start}.stat-icon{width:26px;height:26px;font-size:13px}.stat-box>div b{font-size:17px}.stat-box>div span{font-size:8px;line-height:1.3}.stat-box>small{display:none}.panel-head{padding:16px 14px 12px}.panel-head h2{font-size:14px}.site-preview{height:130px;margin:0 14px}.site-details{padding-left:14px;padding-right:14px}.detail-row{grid-template-columns:90px minmax(0,1fr);font-size:9px}.status-body{padding:17px 16px;min-height:220px}.status-foot{padding:12px 16px}.service-list,.works-list{padding-left:13px;padding-right:13px}.service-row{grid-template-columns:22px minmax(0,1fr) 76px;gap:8px;min-height:56px}.service-time{display:none}.service-price{font-size:9px}.view-only{display:none}.service-info b{font-size:10px}.service-info span{max-width:230px}.work-row{grid-template-columns:46px minmax(0,1fr) 62px;gap:9px;min-height:63px}.work-row>img{width:46px;height:39px}.work-row>b{font-size:9px}.work-row .view-only{display:none}.work-row h3{font-size:10px}.contact-strip{grid-template-columns:1fr 1fr;gap:14px;padding:15px}.contact-strip>div:first-child{grid-column:1/-1}.contact-strip h2{font-size:12px}.contact-item b{font-size:8px}.page-footer{display:block;font-size:8px}.page-footer span{display:block;margin-top:4px}}
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+<style is:global>
+  :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#242a24;background:#f4f5f0;font-synthesis:none;text-rendering:optimizeLegibility;font-optical-sizing:auto}*{box-sizing:border-box}body{margin:0;min-width:320px}button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.admin-shell{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
+  .sidebar{position:sticky;top:0;height:100vh;min-height:600px;background:#202720;color:#f2f3ed;padding:25px 15px 19px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:10px;padding:0 10px 28px}.brand-mark{width:37px;height:37px;background:#f15b35;color:#202720;display:grid;place-items:center;font-size:21px;font-weight:850;letter-spacing:-2px;border-radius:3px}.brand-name{font-size:14px;font-weight:800;letter-spacing:.07em}.brand-name small{display:block;font-size:8px;font-weight:500;color:#aeb6a7;letter-spacing:.2em;margin-top:4px}.workspace{height:59px;background:#2c352d;border:1px solid #404a40;border-radius:5px;padding:8px;display:flex;align-items:center;gap:9px}.workspace-avatar{width:32px;height:32px;display:grid;place-items:center;background:#f0e2c9;color:#514d3f;border-radius:4px;font-weight:700}.workspace>span:nth-child(2){display:flex;flex-direction:column;gap:4px}.workspace b{font-size:10px;font-weight:650}.workspace small{font-size:8px;color:#a4ae9e}.chevron{margin-left:auto;color:#aeb6a7}.nav-caption{font-size:8px;font-weight:700;letter-spacing:.12em;color:#818c7d;margin:29px 12px 9px}.side-nav{display:grid;gap:4px}.nav-link{height:42px;border:0;background:transparent;color:#c4cabe;border-radius:4px;text-align:left;display:flex;align-items:center;gap:11px;padding:0 12px;font-size:11px;transition:.16s}.nav-link:hover,.nav-link:focus-visible{background:#303a30;color:#fff;outline:none}.nav-link.active{background:#39443a;color:#fff;box-shadow:inset 3px 0 #f15b35}.nav-icon{width:16px;text-align:center;font-size:15px;color:#a7b09d}.active .nav-icon{color:#fa8767}.nav-count{margin-left:auto;color:#a5ae9c;font-size:9px}.sidebar-bottom{margin-top:auto;border-top:1px solid #414a3f;padding:17px 9px 0}.demo-mark{display:flex;gap:7px;align-items:center;font-size:9px;font-weight:750;letter-spacing:.07em}.demo-mark i,.demo-pill i,.preview-hint i,.live-badge i{width:7px;height:7px;background:#ee805e;border-radius:50%;display:inline-block}.sidebar-bottom p{font-size:9px;line-height:1.6;color:#aeb7a6;margin:9px 0 15px}.public-link{display:flex;justify-content:space-between;padding:10px 11px;border:1px solid #515c4f;border-radius:4px;font-size:10px}.public-link:hover{border-color:#ef795a}.public-link span{color:#f18768}
+  .main-area{min-width:0}.topbar{height:62px;position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #e7e9e2;padding:0 clamp(22px,3.8vw,55px);display:flex;align-items:center;justify-content:space-between;gap:15px}.breadcrumbs{display:flex;align-items:center;gap:10px;color:#71796e;font-size:10px}.breadcrumbs span{font-weight:750;color:#303830}.breadcrumbs i{font-style:normal;color:#c2c8bb}.breadcrumbs b{font-weight:550}.top-actions{display:flex;align-items:center;gap:17px}.demo-pill{background:#fff2e8;color:#a35838;padding:7px 9px;border-radius:3px;font-size:9px;white-space:nowrap}.demo-pill i{width:6px;height:6px;margin-right:5px}.preview-link{font-size:10px;color:#5e675b;white-space:nowrap}.preview-link b{color:#d66343;margin-left:3px}.apply-button{border:0;background:#29342a;color:#fff;border-radius:4px;padding:10px 14px;font-size:10px;font-weight:600;white-space:nowrap;transition:.15s}.apply-button:hover{background:#435344;transform:translateY(-1px)}.apply-button span{color:#f58868;margin-left:6px}
+  .content-wrap{max-width:1360px;padding:38px clamp(22px,3.8vw,55px) 24px;margin:0 auto}.page-panel[hidden]{display:none}.page-panel{animation:appear .24s ease-out}@keyframes appear{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}.page-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}.eyebrow{font-size:8px;line-height:1.3;letter-spacing:.11em;font-weight:750;color:#7c8577;margin:0 0 9px}.eyebrow>i{display:inline-block;width:6px;height:6px;background:#f15b35;border-radius:50%;margin:0 6px 1px 0}.page-heading h1{font-size:27px;letter-spacing:-.045em;margin:0;font-weight:660;color:#222a22}.subheading{font-size:11px;color:#7a8276;margin:8px 0 0}.button-secondary{border:1px solid #d9ddd3;background:#fff;border-radius:4px;padding:10px 13px;color:#454e44;font-size:10px}.button-secondary:hover{border-color:#ed906f;color:#a64a31}.notice{display:flex;align-items:center;gap:12px;background:#fff8ed;border:1px solid #f0dfc8;padding:12px 14px;border-radius:5px;margin-bottom:17px}.notice-icon{width:28px;height:28px;flex:none;display:grid;place-items:center;background:#f7e8d3;color:#af7040;border-radius:4px}.notice>div{display:flex;flex-direction:column;gap:4px}.notice b{font-size:10px;color:#584732}.notice span{font-size:9px;line-height:1.5;color:#81735f}.notice-close{margin-left:auto;background:transparent;border:0;color:#9b8b73;font-size:19px}
+  .metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:17px}.metric-card{position:relative;min-height:83px;display:flex;align-items:center;gap:12px;text-align:left;border:1px solid #e4e7df;background:#fff;border-radius:5px;padding:14px 16px;transition:.16s}.metric-card:hover{border-color:#c8d0c2;box-shadow:0 5px 18px #2834250d;transform:translateY(-1px)}.metric-symbol{width:34px;height:34px;display:grid;place-items:center;border-radius:4px;font-size:15px}.metric-symbol.olive{background:#edf1e8;color:#677958}.metric-symbol.orange{background:#fff0e9;color:#d66947}.metric-symbol.blue{background:#edf2f2;color:#5c7778}.metric-copy{display:flex;flex-direction:column;gap:4px}.metric-copy b{font-size:18px;line-height:1;font-weight:650}.metric-copy small{font-size:9px;color:#858d80}.metric-arrow{position:absolute;right:13px;top:12px;color:#acb4a7;font-size:12px}.overview-grid{display:grid;grid-template-columns:1.03fr .97fr;gap:15px}.card{background:#fff;border:1px solid #e4e7df;border-radius:5px;min-width:0}.quick-card,.preview-card{padding:19px 20px}.card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-heading .eyebrow{margin-bottom:5px}.card-heading h2{font-size:14px;letter-spacing:-.02em;margin:0;font-weight:630}.heading-icon{color:#a1aa97}.quick-row{display:grid;grid-template-columns:30px minmax(0,1fr) 16px;align-items:center;gap:10px;text-align:left;width:100%;border:0;border-top:1px solid #eef0eb;background:transparent;padding:12px 2px}.quick-row:hover span:nth-child(2) b{color:#bd5336}.quick-icon{width:29px;height:29px;background:#edf1e8;color:#718263;border-radius:4px;display:grid;place-items:center;font-size:13px}.quick-icon.orange-bg{background:#fff0e9;color:#d66947}.quick-icon.blue-bg{background:#edf2f2;color:#668485}.quick-row>span:nth-child(2){display:flex;flex-direction:column;gap:4px}.quick-row b{font-size:10px;font-weight:620}.quick-row small{font-size:8px;color:#838b7f}.quick-row>i{font-style:normal;color:#a0a99a}.subtle-link{font-size:9px;color:#64735c}.mini-site{height:190px;overflow:hidden;border:1px solid #dfe4d9;background:#ecefe7}.mini-top{height:31px;background:#f8f9f5;display:flex;align-items:center;padding:0 12px;gap:6px;color:#394139}.mini-top b{color:#ed6746;font-size:16px}.mini-top span{font-size:7px;letter-spacing:.12em}.mini-top i{font-style:normal;margin-left:auto}.mini-photo{height:calc(100% - 31px);position:relative;background-size:cover;background-position:center}.mini-photo-shade{position:absolute;inset:0;background:linear-gradient(90deg,#151b17d9,#151b1757)}.mini-caption{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:16px 19px;color:#fff}.mini-caption small{font-size:7px;letter-spacing:.12em;color:#e6b6a2}.mini-caption b{font-family:Georgia,serif;font-weight:500;font-size:20px;letter-spacing:-.03em;max-width:300px;margin:8px 0}.mini-caption span{font-size:8px;color:#e6e9e1}.mini-caption button,.large-caption button{margin-top:10px;background:#eb6745;border:0;border-radius:2px;color:#fff;font-size:8px;padding:8px 10px}.preview-hint{display:flex;align-items:center;gap:7px;font-size:8px;color:#838b7f;margin:11px 0 0}.preview-hint i{width:6px;height:6px;background:#84a16c}.bottom-row{margin-top:16px;border:1px solid #e4e7df;background:#fff;border-radius:5px;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}.bottom-row>div{display:flex;align-items:center;gap:9px}.bottom-icon{color:#75826a;font-size:15px}.bottom-row>div>span:last-child{display:flex;flex-direction:column;gap:3px}.bottom-row b{font-size:9px;font-weight:630}.bottom-row small{font-size:8px;color:#838b7f}.text-button{border:0;background:transparent;color:#707b6a;font-size:9px}.text-button span{margin-left:5px;font-size:14px}
+  .editor-layout,.contacts-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start}.editor-card,.live-preview,.contact-preview{padding:21px}.editing-label{font-size:8px;color:#78866c;background:#f0f3ec;border-radius:3px;padding:6px 8px;white-space:nowrap}.field{display:flex;flex-direction:column;gap:6px;margin:0 0 15px}.field>span{font-size:9px;font-weight:620;color:#465044}.field input,.field textarea,.field select{width:100%;background:#fff;border:1px solid #dfe3da;border-radius:4px;padding:10px 11px;font-size:10px;color:#30382e;outline:none;transition:border .15s,box-shadow .15s}.field input:focus,.field textarea:focus,.field select:focus{border-color:#a1ae94;box-shadow:0 0 0 3px #e9eee4}.field textarea{resize:vertical;line-height:1.55;min-height:65px}.field small{font-size:8px;color:#8a9287}.editor-footer{border-top:1px solid #edf0e8;padding-top:14px;display:flex;justify-content:space-between;gap:8px}.large-preview{height:420px;position:relative;overflow:hidden;background-position:center;background-size:cover;border-radius:3px;color:white}.large-shade{position:absolute;inset:0;background:linear-gradient(90deg,#151b17e8 0%,#151b17a3 56%,#151b1733)}.large-brand{position:absolute;top:20px;left:20px;display:flex;gap:8px;align-items:center;text-transform:uppercase;letter-spacing:.12em;font-size:9px}.large-brand b,.contact-brand b{width:28px;height:28px;background:#f15b35;display:grid;place-items:center;color:#242a24;font-size:17px;letter-spacing:-2px}.large-caption{position:absolute;top:27%;left:9%;right:7%;max-width:380px}.large-caption>span{color:#eab39d;font-size:8px;letter-spacing:.14em}.large-caption h3{font:500 34px/1.08 Georgia,serif;letter-spacing:-.035em;margin:13px 0}.large-caption p{font-size:9px;line-height:1.65;color:#e7eae3;max-width:310px}.large-caption button{font-size:9px;padding:10px 14px}.large-address{position:absolute;bottom:17px;left:20px;display:flex;gap:7px;align-items:center;font-size:8px}.large-address span{color:#f18768}.large-address b{font-weight:500}.preview-caption{font-size:8px;color:#858e81;margin:11px 0 0}.live-badge{font-size:8px;color:#6c7964;white-space:nowrap}.live-badge i{width:6px;height:6px;background:#77a36b;margin-right:4px}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 15px;background:#fff;border:1px solid #e4e7df;border-radius:5px;margin-bottom:12px}.toolbar>div{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.toolbar b{font-size:10px}.toolbar span{font-size:9px;color:#828b7e}.add-button{background:#29342a;border:0;border-radius:4px;color:#fff;padding:10px 13px;font-size:9px}.add-button:hover{background:#435344}.add-button b{font-size:13px;margin-right:4px;color:#f18a6b}.editable-list,.works-editor-list{display:grid;gap:10px}.editable-card{background:#fff;border:1px solid #e4e7df;border-radius:5px;padding:16px;display:grid;grid-template-columns:30px minmax(0,1fr) 28px;gap:13px;align-items:start}.item-number{width:27px;height:27px;display:grid;place-items:center;background:#f0f2ed;color:#7a8571;border-radius:4px;font-size:9px}.editable-fields{min-width:0}.editable-fields .field{margin-bottom:12px}.editable-fields .field:last-child{margin-bottom:0}.editable-fields .field input,.editable-fields .field textarea{padding:9px 10px}.two-fields{display:grid;grid-template-columns:1fr 1fr;gap:11px}.delete-button{width:27px;height:27px;background:#fff;border:1px solid #e5e7e1;border-radius:4px;color:#a0a79c;font-size:18px;line-height:1}.delete-button:hover{background:#fff0eb;border-color:#f1c4b4;color:#c35235}.editor-note{display:flex;align-items:center;gap:8px;margin-top:13px;font-size:9px;color:#788174}.editor-note>span{width:17px;height:17px;border:1px solid #aab59f;border-radius:50%;display:grid;place-items:center;font-size:9px}.work-edit-card{grid-template-columns:86px minmax(0,1fr) 28px}.work-thumb{width:86px;height:65px;border-radius:3px;background:#eef0e9 center/cover;display:grid;place-items:center;color:#77846e;font-size:18px}.empty-state{display:flex;flex-direction:column;align-items:center;gap:7px;background:#fff;border:1px dashed #d9ded4;padding:40px 20px;border-radius:5px}.empty-state b{font-size:12px}.empty-state span{font-size:9px;color:#858d80;text-align:center}
+  .contact-preview-body{background:#242b24;color:white;padding:24px;border-radius:4px}.contact-brand{display:flex;align-items:center;gap:9px;text-transform:uppercase;letter-spacing:.13em;font-size:9px;margin-bottom:22px}.contact-brand b{font-size:17px}.contact-preview-row{padding:12px 0;border-top:1px solid #ffffff24;display:flex;flex-direction:column;gap:7px}.contact-preview-row span{font-size:7px;letter-spacing:.1em;color:#aeb6a7}.contact-preview-row b{font-size:10px;font-weight:550}.social-preview{display:flex;gap:8px;margin-top:16px}.social-preview button{background:#354035;border:1px solid #536052;color:#d8ded2;padding:8px 10px;font-size:8px;border-radius:3px}.contact-preview{position:sticky;top:82px}.page-footer{margin-top:22px;padding:14px 1px 4px;border-top:1px solid #e1e5dc;display:flex;justify-content:space-between;gap:15px;color:#899183;font-size:8px}.toast{position:fixed;right:24px;bottom:23px;z-index:20;display:flex;align-items:center;gap:10px;background:#253127;color:#fff;padding:12px 13px;border-radius:5px;box-shadow:0 12px 34px #18201933;opacity:0;pointer-events:none;transform:translateY(8px);transition:.22s}.toast.show{opacity:1;pointer-events:auto;transform:none}.toast>span{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#415b3e;color:#d9efce}.toast>div{display:flex;flex-direction:column;gap:3px}.toast b{font-size:10px}.toast small{font-size:8px;color:#c2cbbd}.toast button{border:0;background:transparent;color:#c2cbbd;font-size:17px;margin-left:12px}.mobile-apply{display:none}button:focus-visible,a:focus-visible{outline:2px solid #ec754f;outline-offset:3px}
+  @media(max-width:1050px){.admin-shell{grid-template-columns:220px minmax(0,1fr)}.overview-grid,.editor-layout,.contacts-layout{grid-template-columns:1fr}.contact-preview{position:static}.large-preview{height:360px}}
+  @media(max-width:720px){.admin-shell{display:block}.sidebar{position:static;height:auto;min-height:0;padding:12px 14px 9px}.brand{padding:0 3px 11px}.brand-mark{width:31px;height:31px;font-size:18px}.workspace,.nav-caption,.sidebar-bottom{display:none}.side-nav{display:flex;overflow-x:auto;gap:4px;scrollbar-width:thin;padding:0 0 3px}.nav-link{width:auto;min-width:max-content;height:34px;padding:0 9px;gap:6px;font-size:9px}.nav-icon{font-size:12px}.nav-count{font-size:8px}.topbar{height:auto;min-height:49px;padding:8px 14px;position:static;flex-wrap:wrap}.top-actions{gap:9px}.demo-pill{font-size:8px;padding:6px}.preview-link{font-size:9px}.top-actions>.apply-button{display:none}.content-wrap{padding:25px 14px 18px}.page-heading{align-items:flex-start;margin-bottom:17px}.page-heading h1{font-size:25px}.subheading{font-size:10px;line-height:1.5}.page-heading>.apply-button{font-size:0;padding:10px}.page-heading>.apply-button span{font-size:11px;margin:0}.notice{align-items:flex-start;padding:10px}.notice>div span{line-height:1.55}.metric-grid{gap:7px}.metric-card{padding:10px 8px;min-height:74px;gap:6px}.metric-symbol{width:27px;height:27px;font-size:12px}.metric-copy b{font-size:15px}.metric-copy small{font-size:8px}.metric-arrow{right:7px;top:6px}.quick-card,.preview-card,.editor-card,.live-preview,.contact-preview{padding:15px}.card-heading h2{font-size:13px}.mini-site{height:173px}.mini-caption b{font-size:17px}.bottom-row{align-items:flex-start}.bottom-row small{line-height:1.5}.text-button{white-space:nowrap}.large-preview{height:340px}.large-caption{left:7%;top:25%}.large-caption h3{font-size:29px}.toolbar{padding:10px;align-items:flex-start}.toolbar>div{display:block}.toolbar>div span{display:block;margin-top:4px}.add-button{padding:9px 10px;font-size:8px;white-space:nowrap}.editable-card{grid-template-columns:24px minmax(0,1fr) 25px;padding:11px;gap:8px}.item-number{width:23px;height:23px}.delete-button{width:25px;height:25px}.two-fields{gap:7px}.field>span{font-size:8px}.field input,.field textarea,.field select{font-size:10px}.work-edit-card{grid-template-columns:54px minmax(0,1fr) 25px}.work-thumb{width:54px;height:48px}.work-edit-card .two-fields{grid-template-columns:1fr}.contact-preview-body{padding:17px}.page-footer{display:block;line-height:1.6}.page-footer span{display:block;margin-top:4px}.mobile-apply{display:block;font-size:8px!important;padding:9px!important}.mobile-apply span{font-size:8px!important}}
+  @media(max-width:390px){.top-actions{gap:6px}.preview-link{display:none}.metric-grid{grid-template-columns:1fr 1fr}.metric-card:last-child{grid-column:1/-1}.quick-card,.preview-card{padding:12px}.editor-footer{flex-direction:column}.editor-footer button{width:100%}.two-fields{grid-template-columns:1fr}.work-edit-card .two-fields{grid-template-columns:1fr}.large-preview{height:315px}.large-caption h3{font-size:25px}.bottom-row{flex-direction:column}.notice{gap:8px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
