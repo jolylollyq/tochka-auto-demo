@@ -1,0 +1,65 @@
+backend:
+  name: git-gateway
+local_backend: true
+locale: ru
+media_folder: public/images
+public_folder: /images
+site_url: http://localhost:4321
+display_url: http://localhost:4321
+logo_url: /favicon.svg
+editor:
+  preview: false
+collections:
+  - name: website
+    label: Сайт автосервиса
+    files:
+      - name: site
+        label: Тексты, услуги и работы
+        file: src/content/site.json
+        format: json
+        fields:
+          - {label: Название, name: name, widget: string}
+          - {label: Подпись над заголовком, name: eyebrow, widget: string}
+          - {label: Главный заголовок, name: headline, widget: string}
+          - {label: Вступительный текст, name: intro, widget: text}
+          - {label: Телефон, name: phone, widget: string}
+          - {label: Адрес, name: address, widget: string}
+          - {label: Режим работы, name: hours, widget: string}
+          - {label: Главное фото, name: heroImage, widget: image}
+          - label: Услуги
+            name: services
+            widget: list
+            summary: '{{fields.title}}'
+            min: 1
+            fields:
+              - {label: Название, name: title, widget: string}
+              - {label: Описание, name: description, widget: text}
+              - {label: Цена, name: price, widget: string}
+              - {label: Срок, name: time, widget: string}
+              - {label: Подробности, name: details, widget: text}
+          - label: Примеры работ
+            name: cases
+            widget: list
+            summary: '{{fields.title}}'
+            min: 1
+            fields:
+              - {label: Заголовок, name: title, widget: string}
+              - {label: Автомобиль и год, name: car, widget: string}
+              - label: Категория
+                name: category
+                widget: select
+                options: [Тормоза, Обслуживание, Подвеска]
+              - {label: Фотография, name: image, widget: image}
+              - {label: Описание фотографии, name: alt, widget: string}
+              - {label: Проблема, name: problem, widget: text}
+              - {label: Решение, name: solution, widget: text}
+              - {label: Результат, name: result, widget: text}
+              - {label: Срок, name: time, widget: string}
+              - {label: Стоимость работ, name: price, widget: string}
+          - label: Вопросы и ответы
+            name: faq
+            widget: list
+            summary: '{{fields.question}}'
+            fields:
+              - {label: Вопрос, name: question, widget: string}
+              - {label: Ответ, name: answer, widget: text}
