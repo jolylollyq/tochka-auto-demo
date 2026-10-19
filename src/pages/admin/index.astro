@@ -1,2 +1,199 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>ТОЧКА · Редактор сайта</title><style>body{margin:0;font-family:Arial,sans-serif;background:#f3f2ec}.cms-help{padding:12px 25px;background:#252b25;color:#fff;font-size:12px;line-height:1.6}.cms-help a{color:#ff9d76}.cms-help p{margin:0}#cms-root{min-height:90vh}</style></head><body><div class="cms-help"><p><b>ТОЧКА / Управление сайтом</b> · Демо CMS · <a href={import.meta.env.BASE_URL} target="_blank" rel="noopener">Открыть сайт ↗</a></p><p>Онлайн-редактирование на GitHub Pages не подключено. Локально CMS сохраняет изменения в файлы проекта; для запуска используйте npm start.</p></div><div id="cms-root"></div><script is:inline src={`${import.meta.env.BASE_URL}admin/decap-cms.js`}></script></body></html>
+---
+import data from '../../content/site.json';
 
+const baseUrl = import.meta.env.BASE_URL;
+const imageUrl = (value) => `${baseUrl}${value.replace(/^\//, '')}`;
+const sections = [
+  { label: 'Обзор', href: '#overview', icon: '◫' },
+  { label: 'Страница сайта', href: '#site-content', icon: '▤' },
+  { label: 'Услуги', href: '#services', icon: '⚙' },
+  { label: 'Примеры работ', href: '#works', icon: '▧' },
+  { label: 'Контакты', href: '#contacts', icon: '⌖' },
+];
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="theme-color" content="#202720" />
+    <title>Управление сайтом · {data.name}</title>
+  </head>
+  <body>
+    <div class="admin-shell">
+      <aside class="sidebar" aria-label="Разделы панели">
+        <a class="brand" href="#overview" aria-label="ТОЧКА, обзор">
+          <span class="brand-mark" aria-hidden="true">т.</span>
+          <span class="brand-name">ТОЧКА<small>АВТОСЕРВИС</small></span>
+        </a>
+
+        <p class="sidebar-caption">Рабочее пространство</p>
+        <nav class="side-nav">
+          {sections.map((section, index) => (
+            <a class:list={['nav-link', { active: index === 0 }]} href={section.href} aria-current={index === 0 ? 'page' : undefined}>
+              <span class="nav-icon" aria-hidden="true">{section.icon}</span>{section.label}
+              {section.label === 'Услуги' && <span class="nav-count">{data.services.length}</span>}
+              {section.label === 'Примеры работ' && <span class="nav-count">{data.cases.length}</span>}
+            </a>
+          ))}
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="demo-mark"><span></span> Демо-панель</div>
+          <p>Только просмотр.<br />Изменения не сохраняются.</p>
+          <a class="public-link" href={baseUrl} target="_blank" rel="noopener">Открыть сайт <span aria-hidden="true">↗</span></a>
+        </div>
+      </aside>
+
+      <main id="overview" class="main-area">
+        <header class="topbar">
+          <div class="crumb"><span>ТОЧКА</span><i>/</i> Обзор</div>
+          <div class="topbar-right"><span class="preview-badge"><i></i> Демо · 2026</span><a href={baseUrl} target="_blank" rel="noopener">Публичная страница <b aria-hidden="true">↗</b></a></div>
+        </header>
+
+        <div class="content-wrap">
+          <section class="welcome" aria-labelledby="welcome-title">
+            <div>
+              <p class="overline"><span class="orange-dot"></span> Панель управления</p>
+              <h1 id="welcome-title">Сайт в порядке.</h1>
+              <p class="welcome-copy">Здесь собраны основные разделы сайта автосервиса {data.name}.</p>
+            </div>
+            <div class="welcome-note"><span class="note-icon">i</span><p><b>Демонстрационный режим</b><br />Панель показывает, как может выглядеть управление сайтом. Данные здесь нельзя изменить.</p></div>
+          </section>
+
+          <section class="stat-row" aria-label="Сводка по содержимому">
+            <article class="stat-box"><span class="stat-icon olive">▤</span><div><b>{data.services.length}</b><span>услуг на сайте</span></div><small>раздел услуг</small></article>
+            <article class="stat-box"><span class="stat-icon orange">▧</span><div><b>{data.cases.length}</b><span>примера работ</span></div><small>портфолио</small></article>
+            <article class="stat-box"><span class="stat-icon charcoal">⌖</span><div><b>Контакты</b><span>указаны на странице</span></div><small>контактный блок</small></article>
+          </section>
+
+          <section class="overview-grid" id="site-content">
+            <article class="panel site-panel">
+              <div class="panel-head"><div><p class="overline">Публичная страница</p><h2>Основная информация</h2></div><span class="read-only">Только просмотр</span></div>
+              <div class="site-preview">
+                <img src={imageUrl(data.heroImage)} alt="Превью главного экрана сайта автосервиса" />
+                <div class="preview-overlay"><span>САЙТ · ДЕМО</span><a href={baseUrl} target="_blank" rel="noopener" aria-label="Открыть публичный сайт">↗</a></div>
+              </div>
+              <div class="site-details">
+                <div class="detail-row"><span>Название</span><b>{data.name}</b></div>
+                <div class="detail-row"><span>Заголовок</span><b>{data.headline}</b></div>
+                <div class="detail-row"><span>Адрес</span><b>{data.address}</b></div>
+                <div class="detail-row"><span>Телефон</span><b>{data.phone}</b></div>
+                <div class="detail-row"><span>Режим работы</span><b>{data.hours}</b></div>
+              </div>
+            </article>
+
+            <article class="panel status-panel">
+              <div class="panel-head"><div><p class="overline">Состояние</p><h2>Что видит посетитель</h2></div><span class="status-live"><i></i> Опубликовано</span></div>
+              <div class="status-body">
+                <div class="status-symbol" aria-hidden="true">✓</div>
+                <h3>Страница доступна</h3>
+                <p>Публичная демо-страница открывается по ссылке. Форма записи показывает демонстрационное подтверждение и не отправляет заявку.</p>
+                <a class="outline-link" href={baseUrl} target="_blank" rel="noopener">Посмотреть сайт <span aria-hidden="true">↗</span></a>
+              </div>
+              <div class="status-foot"><span>Редактирование</span><b>Отключено в демо</b></div>
+            </article>
+          </section>
+
+          <section class="panel list-panel" id="services">
+            <div class="panel-head"><div><p class="overline">Содержание сайта</p><h2>Услуги</h2></div><span class="section-total">{data.services.length} позиций</span></div>
+            <div class="service-list">
+              {data.services.map((service, index) => (
+                <div class="service-row"><span class="service-index">{String(index + 1).padStart(2, '0')}</span><div class="service-info"><b>{service.title}</b><span>{service.description}</span></div><span class="service-time">{service.time}</span><b class="service-price">{service.price}</b><span class="view-only">Просмотр</span></div>
+              ))}
+            </div>
+          </section>
+
+          <section class="panel list-panel works-panel" id="works">
+            <div class="panel-head"><div><p class="overline">Портфолио</p><h2>Примеры работ</h2></div><span class="section-total">{data.cases.length} карточки</span></div>
+            <div class="works-list">
+              {data.cases.map((item) => (
+                <article class="work-row"><img src={imageUrl(item.image)} alt={item.alt} /><div><span class="work-category">{item.category}</span><h3>{item.title}</h3><p>{item.car} · {item.time}</p></div><b>{item.price}</b><span class="view-only">Просмотр</span></article>
+              ))}
+            </div>
+          </section>
+
+          <section class="contact-strip" id="contacts">
+            <div><p class="overline">Связь с автосервисом</p><h2>Контактные данные на сайте</h2></div>
+            <div class="contact-item"><span>Телефон</span><b>{data.phone}</b></div>
+            <div class="contact-item"><span>Адрес</span><b>{data.address}</b></div>
+            <div class="contact-item"><span>Часы работы</span><b>{data.hours}</b></div>
+          </section>
+
+          <footer class="page-footer"><span>ТОЧКА · Демо панели управления</span><span>Показаны демонстрационные данные. Ничего не редактируется и не сохраняется.</span></footer>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#252b25;background:#f2f3ed;font-synthesis:none;text-rendering:optimizeLegibility}
+  *{box-sizing:border-box}
+  body{margin:0;min-width:320px}
+  a{color:inherit;text-decoration:none}
+  .admin-shell{min-height:100vh;display:grid;grid-template-columns:238px minmax(0,1fr)}
+  .sidebar{background:#202720;color:#eef0e7;padding:27px 16px 20px;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:11px;padding:0 12px 39px}
+  .brand-mark{width:39px;height:39px;display:grid;place-items:center;background:#f15b35;color:#202720;font-size:22px;font-weight:800;letter-spacing:-2px;border-radius:2px}
+  .brand-name{font-size:15px;font-weight:750;letter-spacing:.06em}.brand-name small{display:block;font-size:8px;font-weight:500;letter-spacing:.22em;color:#b0b8a8;margin-top:4px}
+  .sidebar-caption{font-size:10px;color:#8f9989;padding:0 13px;margin:0 0 11px}
+  .side-nav{display:grid;gap:4px}
+  .nav-link{min-height:42px;padding:0 13px;display:flex;align-items:center;gap:12px;color:#c1c8ba;font-size:12px;border-radius:3px;transition:background .16s,color .16s}
+  .nav-link:hover,.nav-link:focus-visible{background:#303a30;color:#fff;outline:none}
+  .nav-link.active{background:#39443a;color:#fff;box-shadow:inset 3px 0 #f15b35}
+  .nav-icon{width:17px;text-align:center;color:#aab39e;font-size:15px}.active .nav-icon{color:#f47c5d}
+  .nav-count{margin-left:auto;color:#aab39e;font-size:10px}
+  .sidebar-bottom{margin-top:auto;border-top:1px solid #414a3f;padding:18px 12px 0}
+  .demo-mark{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:650}.demo-mark span,.preview-badge i,.status-live i{width:7px;height:7px;border-radius:50%;background:#f15b35;display:inline-block}
+  .sidebar-bottom p{font-size:10px;line-height:1.6;color:#aeb7a6;margin:10px 0 17px}
+  .public-link{display:flex;justify-content:space-between;align-items:center;border:1px solid #525d50;padding:11px 12px;font-size:11px;border-radius:3px}.public-link:hover{border-color:#ef795a;color:#fff}
+  .main-area{min-width:0}
+  .topbar{height:64px;background:#fbfcf7;border-bottom:1px solid #e0e3d9;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(22px,4vw,58px);position:sticky;top:0;z-index:5}
+  .crumb{display:flex;gap:11px;align-items:center;font-size:11px;color:#777f72}.crumb span{font-weight:700;color:#343b33}.crumb i{font-style:normal;color:#c2c8bb}
+  .topbar-right{display:flex;align-items:center;gap:24px;font-size:10px;color:#555e52}.topbar-right>a:hover{color:#df4e2b}.topbar-right b{color:#e65b39;margin-left:4px}
+  .preview-badge{display:flex;align-items:center;gap:7px;background:#f1f2eb;padding:8px 10px;border-radius:2px;color:#596252}.preview-badge i{background:#72886a;width:6px;height:6px}
+  .content-wrap{width:min(1120px,100%);margin:0 auto;padding:39px clamp(22px,4vw,58px) 22px}
+  .welcome{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:25px}
+  .overline{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#77806f;margin:0 0 9px;font-weight:650}
+  .orange-dot{display:inline-block;width:7px;height:7px;background:#f15b35;border-radius:50%;margin:0 7px 1px 0}
+  h1{font-size:clamp(30px,3vw,42px);letter-spacing:-.045em;line-height:1.1;margin:0;font-weight:640;color:#222922}
+  .welcome-copy{font-size:12px;color:#71796e;margin:10px 0 0;line-height:1.6}
+  .welcome-note{display:flex;gap:11px;max-width:345px;padding:12px 14px;background:#e8ece0;border-left:2px solid #87977d}
+  .note-icon{width:18px;height:18px;border:1px solid #8a9880;color:#6e8065;border-radius:50%;display:grid;place-items:center;font:600 11px Georgia;flex:none}
+  .welcome-note p{font-size:10px;line-height:1.55;color:#626b5b;margin:0}.welcome-note b{font-size:10px;color:#384335;font-weight:700}
+  .stat-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+  .stat-box{min-height:88px;display:flex;align-items:center;gap:12px;background:#fbfcf7;border:1px solid #e1e4da;padding:15px 16px;position:relative}
+  .stat-icon{height:34px;width:34px;display:grid;place-items:center;font-size:16px;border-radius:2px;flex:none}.stat-icon.olive{background:#e7ecdf;color:#5b7452}.stat-icon.orange{background:#fff0e8;color:#e45a36}.stat-icon.charcoal{background:#e8ebe4;color:#485546}
+  .stat-box>div{display:flex;flex-direction:column;gap:3px}.stat-box>div b{font-size:20px;line-height:1;font-weight:650;letter-spacing:-.04em}.stat-box>div span{font-size:10px;color:#71796d}
+  .stat-box>small{margin-left:auto;align-self:flex-start;color:#899183;font-size:9px;white-space:nowrap}
+  .overview-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(275px,.82fr);gap:14px;margin-bottom:14px}
+  .panel{background:#fbfcf7;border:1px solid #e1e4da}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:19px 21px 15px}
+  .panel-head .overline{margin-bottom:5px;font-size:8px}.panel-head h2{font-size:16px;letter-spacing:-.025em;font-weight:620;margin:0}
+  .read-only,.section-total{font-size:9px;color:#70796c;background:#f0f2eb;padding:7px 9px;white-space:nowrap}
+  .site-preview{height:152px;position:relative;overflow:hidden;background:#30382e;margin:0 21px}
+  .site-preview img{width:100%;height:100%;object-fit:cover;object-position:center 56%;opacity:.8;display:block}
+  .preview-overlay{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:space-between;padding:12px;color:#f8f6ee;font-size:8px;letter-spacing:.1em}.preview-overlay a{width:27px;height:27px;display:grid;place-items:center;background:#f15b35;color:#202720;font-size:15px}
+  .site-details{padding:10px 21px 15px}
+  .detail-row{display:grid;grid-template-columns:115px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid #edf0e8;font-size:10px;line-height:1.45}.detail-row:last-child{border-bottom:0}.detail-row>span{color:#81897d}.detail-row>b{font-weight:560;color:#343b33}
+  .status-live{display:flex;align-items:center;gap:6px;color:#66815b;background:#edf2e8;padding:7px 9px;font-size:9px;white-space:nowrap}.status-live i{background:#728d64;width:6px;height:6px}
+  .status-body{padding:20px 22px 18px;min-height:310px;display:flex;flex-direction:column;align-items:flex-start}
+  .status-symbol{width:36px;height:36px;background:#e8eee1;color:#627b56;display:grid;place-items:center;font-size:18px;border-radius:50%;margin-bottom:15px}
+  .status-body h3{font-size:16px;letter-spacing:-.02em;margin:0;font-weight:620}.status-body p{font-size:11px;line-height:1.7;color:#70796d;margin:9px 0 18px;max-width:340px}
+  .outline-link{margin-top:auto;border:1px solid #cfd5c8;padding:10px 12px;font-size:10px;display:flex;gap:24px;align-items:center}.outline-link:hover{border-color:#ea6848;color:#c94c2d}.outline-link span{font-size:13px}
+  .status-foot{border-top:1px solid #e9ece4;display:flex;justify-content:space-between;gap:10px;padding:13px 22px;color:#81897c;font-size:9px}.status-foot b{font-weight:600;color:#596453}
+  .list-panel{margin-bottom:14px}.service-list{padding:0 21px 8px}
+  .service-row{display:grid;grid-template-columns:30px minmax(130px,1fr) minmax(70px,100px) 95px 65px;gap:12px;align-items:center;min-height:57px;border-top:1px solid #edf0e8;font-size:10px}
+  .service-index{font-size:9px;color:#9aa193}.service-info{display:flex;flex-direction:column;gap:4px;min-width:0}.service-info b{font-size:11px;font-weight:620}.service-info span{font-size:9px;color:#858d80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:410px}.service-time{color:#70796c}.service-price{font-weight:600}.view-only{justify-self:end;color:#90988a;background:#f0f2eb;padding:6px 8px;font-size:8px;white-space:nowrap}
+  .works-list{padding:0 21px 8px}.work-row{display:grid;grid-template-columns:54px minmax(150px,1fr) 100px 65px;gap:13px;align-items:center;min-height:68px;border-top:1px solid #edf0e8}.work-row>img{width:54px;height:43px;object-fit:cover}.work-row>div{min-width:0}.work-category{font-size:8px;color:#77806f}.work-row h3{font-size:11px;margin:3px 0;font-weight:620}.work-row p{font-size:9px;color:#858d80;margin:0}.work-row>b{font-size:10px;font-weight:600}
+  .contact-strip{display:grid;grid-template-columns:1.4fr 1fr 1.2fr 1fr;gap:18px;align-items:center;background:#e8ebe2;border-left:3px solid #f15b35;padding:17px 20px;margin:16px 0}
+  .contact-strip .overline{font-size:8px;margin-bottom:5px}.contact-strip h2{font-size:13px;margin:0;font-weight:620}.contact-item{display:flex;flex-direction:column;gap:6px;min-width:0}.contact-item span{font-size:8px;color:#77806f}.contact-item b{font-size:9px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+  .page-footer{padding:16px 0 5px;display:flex;justify-content:space-between;gap:16px;color:#899183;font-size:8px;line-height:1.5}
+  a:focus-visible{outline:2px solid #f15b35;outline-offset:3px}
+  @media(max-width:980px){.admin-shell{grid-template-columns:205px minmax(0,1fr)}.sidebar{padding-left:11px;padding-right:11px}.content-wrap{padding-left:25px;padding-right:25px}.topbar{padding-left:25px;padding-right:25px}.overview-grid{grid-template-columns:1fr}.status-body{min-height:230px}.contact-strip{grid-template-columns:1fr 1fr}.contact-strip>div:first-child{grid-column:1/-1}}
+  @media(max-width:680px){.admin-shell{display:block}.sidebar{position:relative;height:auto;min-height:0;padding:15px 16px 10px}.brand{padding:0 2px 14px}.brand-mark{width:33px;height:33px}.sidebar-caption,.sidebar-bottom{display:none}.side-nav{display:flex;overflow-x:auto;gap:5px;padding-bottom:2px;scrollbar-width:thin}.nav-link{min-height:35px;padding:0 10px;font-size:10px;white-space:nowrap;gap:7px}.nav-icon{font-size:13px}.nav-count{margin-left:1px}.topbar{height:49px;padding:0 17px;position:static}.topbar-right{gap:10px;font-size:9px}.preview-badge{padding:6px 7px}.content-wrap{padding:26px 16px 16px}.welcome{display:block;margin-bottom:18px}.welcome h1{font-size:32px}.welcome-copy{font-size:11px}.welcome-note{margin-top:15px;max-width:none}.stat-row{gap:7px}.stat-box{min-height:80px;padding:10px 8px;gap:7px;align-items:flex-start}.stat-icon{width:26px;height:26px;font-size:13px}.stat-box>div b{font-size:17px}.stat-box>div span{font-size:8px;line-height:1.3}.stat-box>small{display:none}.panel-head{padding:16px 14px 12px}.panel-head h2{font-size:14px}.site-preview{height:130px;margin:0 14px}.site-details{padding-left:14px;padding-right:14px}.detail-row{grid-template-columns:90px minmax(0,1fr);font-size:9px}.status-body{padding:17px 16px;min-height:220px}.status-foot{padding:12px 16px}.service-list,.works-list{padding-left:13px;padding-right:13px}.service-row{grid-template-columns:22px minmax(0,1fr) 76px;gap:8px;min-height:56px}.service-time{display:none}.service-price{font-size:9px}.view-only{display:none}.service-info b{font-size:10px}.service-info span{max-width:230px}.work-row{grid-template-columns:46px minmax(0,1fr) 62px;gap:9px;min-height:63px}.work-row>img{width:46px;height:39px}.work-row>b{font-size:9px}.work-row .view-only{display:none}.work-row h3{font-size:10px}.contact-strip{grid-template-columns:1fr 1fr;gap:14px;padding:15px}.contact-strip>div:first-child{grid-column:1/-1}.contact-strip h2{font-size:12px}.contact-item b{font-size:8px}.page-footer{display:block;font-size:8px}.page-footer span{display:block;margin-top:4px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
